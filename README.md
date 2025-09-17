@@ -244,6 +244,9 @@ Analysis completed in 36.17 seconds
 
 The repository includes `rocks_utah.png` as a sample image from Uinta-Wasatch-Cache National Forest, Utah. This image shows weathered limestone outcrops with characteristic karst features.
 
+![Sample Rock Image](rocks_utah.png)
+*Sample image: Weathered limestone outcrops in Utah with visible karst weathering patterns*
+
 ## Technical Details
 
 - Uses Google's `google-genai` Python SDK
