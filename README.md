@@ -1,5 +1,7 @@
 # Rock Image Analyzer - AI-Powered Geological Analysis
 
+> ⚠️ **EXPERIMENTAL PROJECT** - This is an amateur hobby tool. Rock identifications are AI-generated and should not be considered authoritative geological assessments.
+
 An amateur Python project that uses Google's Gemini 2.5 Pro AI model to identify and analyze rocks in images. This is an experimental tool developed as part of a wider hobby project, attempting to use established geological classification standards where possible.
 
 ## Features
