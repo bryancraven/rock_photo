@@ -1,16 +1,16 @@
 # Rock Image Analyzer - AI-Powered Geological Analysis
 
-A Python application that uses Google's Gemini 2.5 Flash AI model to perform comprehensive geological analysis of rocks in images. Features professional-grade rock classification, detailed mineralogical assessment, and location-aware geological interpretation.
+An amateur Python project that uses Google's Gemini 2.5 Flash AI model to identify and analyze rocks in images. This is an experimental tool developed as part of a wider hobby project, attempting to use established geological classification standards where possible.
 
 ## Features
 
-- **Professional Geological Classification**: Uses standardized geological terminology and classifications (rock classes, Wentworth scale, weathering grades, etc.)
-- **Location-Aware Analysis**: Optional location context enhances identification accuracy with regional geological knowledge
+- **Geological Classification Attempt**: Tries to apply standardized geological terminology (rock classes, Wentworth scale, weathering grades, etc.)
+- **Location-Aware Analysis**: Optional location context to potentially improve identification accuracy
 - **Comparison Mode**: Analyze with and without location to see the impact of contextual information
-- **Structured JSON Output**: Standardized discrete fields for programmatic parsing plus flexible descriptive fields
+- **Structured JSON Output**: Discrete fields for programmatic parsing plus descriptive fields
 - **Fast Analysis**: ~20-40 seconds per image using Gemini 2.5 Flash
 - **Two Analysis Modes**:
-  - `rock_analyzer.py`: Comprehensive geological analysis with professional standardization
+  - `rock_analyzer.py`: Detailed geological analysis attempting to use standard classifications
   - `quick_analyzer.py`: Faster simplified analysis with basic categorization
 
 ## Installation
@@ -83,11 +83,11 @@ python quick_analyzer.py rocks.jpg --location "Hawaii" --compare --save
 - `primary_structure`: massive, layered, vesicular, etc.
 - `geological_context`: in_situ_outcrop, float, talus, etc.
 
-**Flexible Descriptive Fields** (geological expertise):
+**Flexible Descriptive Fields** (AI interpretation):
 - `specific_rock_name`: Detailed rock identification
 - `mineral_assemblage`: Visible minerals
 - `texture_description`: Comprehensive texture analysis
-- `field_notes`: Professional observations
+- `field_notes`: AI-generated observations
 - `likely_formation`: Geological formation if identifiable
 
 ### Sample Analysis Results
@@ -260,8 +260,12 @@ Contributions are welcome! Please feel free to submit pull requests or open issu
 
 MIT License - See LICENSE file for details
 
+## Disclaimer
+
+This is an amateur hobby project for educational and experimental purposes. The geological identifications are AI-generated and should not be considered authoritative or professional geological assessments. Always consult qualified geologists for professional rock and mineral identification.
+
 ## Acknowledgments
 
-- Google Gemini AI for the powerful vision model
-- Geological classification standards from USGS and geological societies
+- Google Gemini AI for the vision model
+- Geological classification standards from USGS and geological societies (attempted implementation)
 - Wentworth scale for grain size classification
