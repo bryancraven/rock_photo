@@ -293,7 +293,7 @@ def analyze_rocks_geological(image_path: str, location: str = None, use_location
     config = types.GenerateContentConfig(
         response_mime_type="application/json",
         response_schema=GeologicalAnalysisResult,
-        thinking_config=types.ThinkingConfig(thinking_budget=0)
+        thinking_config=types.ThinkingConfig(thinking_budget=32000)
     )
 
     print(f"Performing geological analysis {'with' if (location and use_location) else 'without'} location context...")
@@ -301,7 +301,7 @@ def analyze_rocks_geological(image_path: str, location: str = None, use_location
 
     try:
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model="gemini-2.5-pro",
             contents=[image, prompt],
             config=config
         )

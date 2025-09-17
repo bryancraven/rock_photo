@@ -119,7 +119,7 @@ def analyze_rocks(image_path: str, location: str = None, use_location: bool = Tr
     config = types.GenerateContentConfig(
         response_mime_type="application/json",
         response_schema=RockAnalysisResult,
-        thinking_config=types.ThinkingConfig(thinking_budget=0)
+        thinking_config=types.ThinkingConfig(thinking_budget=32000)
     )
 
     print(f"Analyzing rocks {'with' if (location and use_location) else 'without'} location context...")
@@ -127,7 +127,7 @@ def analyze_rocks(image_path: str, location: str = None, use_location: bool = Tr
 
     try:
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model="gemini-2.5-pro",
             contents=[image, prompt],
             config=config
         )
@@ -208,12 +208,12 @@ def generate_comparison(with_loc: dict, without_loc: dict, location: str) -> dic
     config = types.GenerateContentConfig(
         response_mime_type="application/json",
         response_schema=ComparisonAnalysis,
-        thinking_config=types.ThinkingConfig(thinking_budget=0)
+        thinking_config=types.ThinkingConfig(thinking_budget=32000)
     )
 
     try:
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model="gemini-2.5-pro",
             contents=comparison_prompt,
             config=config
         )

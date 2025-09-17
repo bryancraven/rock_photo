@@ -1,6 +1,6 @@
 # Rock Image Analyzer - AI-Powered Geological Analysis
 
-An amateur Python project that uses Google's Gemini 2.5 Flash AI model to identify and analyze rocks in images. This is an experimental tool developed as part of a wider hobby project, attempting to use established geological classification standards where possible.
+An amateur Python project that uses Google's Gemini 2.5 Pro AI model to identify and analyze rocks in images. This is an experimental tool developed as part of a wider hobby project, attempting to use established geological classification standards where possible.
 
 ## Features
 
@@ -8,7 +8,7 @@ An amateur Python project that uses Google's Gemini 2.5 Flash AI model to identi
 - **Location-Aware Analysis**: Optional location context to potentially improve identification accuracy
 - **Comparison Mode**: Analyze with and without location to see the impact of contextual information
 - **Structured JSON Output**: Discrete fields for programmatic parsing plus descriptive fields
-- **Fast Analysis**: ~20-40 seconds per image using Gemini 2.5 Flash
+- **Analysis Time**: ~60-80 seconds per image using Gemini 2.5 Pro with thinking mode
 - **Two Analysis Modes**:
   - `rock_analyzer.py`: Detailed geological analysis attempting to use standard classifications
   - `quick_analyzer.py`: Faster simplified analysis with basic categorization
@@ -93,58 +93,46 @@ python quick_analyzer.py rocks.jpg --location "Hawaii" --compare --save
 ### Sample Analysis Results
 
 <details>
-<summary><b>📊 Full Analysis with Location Context</b> (Uinta-Wasatch-Cache National Forest, Utah)</summary>
+<summary><b>📊 Full Analysis Without Location Context</b></summary>
 
 ```json
 {
   "summary": {
-    "total_rocks": 7,
+    "total_rocks": 5,
     "dominant_rock_class": "sedimentary_chemical",
     "secondary_rock_class": "unconsolidated",
-    "geological_setting": "Mountainous terrain within a national forest, characterized by exposed bedrock and unconsolidated material. The presence of limestone suggests a past marine environment.",
-    "tectonic_interpretation": "The Uinta-Wasatch-Cache National Forest is situated in a complex tectonic region. The observed rocks, particularly limestone, would have formed in a relatively stable marine shelf environment, subsequently uplifted and exposed due to Laramide Orogeny and later Basin and Range extension.",
-    "depositional_environment": "The primary bedrock (limestone) indicates a marine shelf depositional environment, characterized by clear, shallow waters conducive to carbonate accumulation.",
-    "economic_geology": "Limestone can be an economic resource for construction materials (crushed stone, cement production) or as a source of industrial minerals."
+    "geological_setting": "The prevalence of tufa/travertine strongly suggests a localized depositional setting at a site of carbonate-rich groundwater discharge.",
+    "tectonic_interpretation": "Travertine deposits can be associated with extensional tectonic settings where faulting provides conduits for deep, mineral-rich groundwater circulation.",
+    "depositional_environment": "Terrestrial freshwater environment characterized by the precipitation of calcium carbonate from solution. This could be a cool-water spring (forming tufa) or a geothermal hot spring (forming travertine).",
+    "economic_geology": "Travertine and tufa are quarried as ornamental and lightweight building stones. Such spring systems can also be indicators for geothermal energy potential."
   },
   "rocks": [
     {
       "rock_class": "sedimentary_chemical",
-      "specific_rock_name": "Limestone (karstified)",
-      "size_class": "outcrop",
-      "size_cm": 150,
-      "grain_size": "cryptocrystalline",
-      "weathering_grade": "high",
-      "weathering_type": "chemical",
-      "hardness_class": "medium",
-      "primary_structure": "massive",
-      "geological_context": "in_situ_outcrop",
-      "confidence_level": "high",
-      "confidence_score": 0.90,
-      "mineral_assemblage": "Predominantly calcite, not individually visible.",
-      "field_notes": "Likely a weathered limestone outcrop. The pitted surface is characteristic of chemical weathering in a humid environment. Partially covered by soil and vegetation.",
-      "likely_formation": "Paleozoic marine carbonate formation."
-    },
-    {
-      "rock_class": "sedimentary_chemical",
-      "specific_rock_name": "Limestone (karstified)",
+      "specific_rock_name": "Tufa",
       "size_class": "boulder",
-      "size_cm": 70,
+      "size_cm": 45,
       "grain_size": "cryptocrystalline",
       "weathering_grade": "high",
       "weathering_type": "chemical",
+      "hardness_class": "soft",
+      "primary_structure": "vesicular",
+      "geological_context": "displaced_block",
       "confidence_level": "high",
       "confidence_score": 0.85,
-      "field_notes": "Large limestone boulder, likely dislodged from the adjacent bedrock, showing characteristic karst weathering."
+      "mineral_assemblage": "Primarily calcium carbonate (likely calcite).",
+      "field_notes": "This appears to be a large piece of tufa, a freshwater carbonate deposit. The porous structure suggests rapid CO2 degassing and/or encrustation of plants.",
+      "likely_formation": "Precipitated from cool, calcium-rich spring water, possibly encrusting plants or algae which have since decayed."
     }
   ]
 }
 ```
 
 **Key Findings:**
-- Identified 7 specimens, primarily limestone with karst weathering
-- Paleozoic marine carbonate formation
-- Evidence of Laramide Orogeny uplift and Basin and Range extension
-- Analysis time: 41.06 seconds
+- Identified as tufa (freshwater carbonate deposits) based on vesicular texture
+- Spring system deposit with rapid CO2 degassing
+- High porosity from encrusted organic matter that decayed
+- Analysis time: ~68 seconds
 
 </details>
 
@@ -154,21 +142,19 @@ python quick_analyzer.py rocks.jpg --location "Hawaii" --compare --save
 <summary><b>🔄 With vs Without Location Context</b></summary>
 
 #### With Location (Uinta-Wasatch-Cache National Forest, Utah):
-- **Total specimens identified**: 7
-- **Specific formations**: Paleozoic marine carbonate formation
+- **Rock identification**: Limestone with karst weathering
+- **Formation**: Paleozoic marine carbonate
 - **Tectonic context**: Laramide Orogeny and Basin and Range extension
-- **Additional specimens**: Identified unconsolidated material and possible Cambrian Tintic Quartzite fragments
-- **Confidence levels**: Generally higher (0.60-0.95)
+- **Depositional environment**: Marine shelf environment
 
 #### Without Location:
-- **Total specimens identified**: 4
-- **Generic identification**: "Karstic bedrock formation"
-- **Tectonic context**: Generic fold-and-thrust belt or stable platform
-- **Fewer details**: Missed smaller clastic fragments and specific geological history
-- **Confidence levels**: Similar for main features (0.70-0.95)
+- **Rock identification**: Tufa/travertine (freshwater carbonate)
+- **Formation**: Spring system deposit
+- **Tectonic context**: Possible extensional setting with groundwater circulation
+- **Depositional environment**: Terrestrial freshwater spring
 
 **Impact of Location Context:**
-Location information increased specimen detection by 75% and enabled specific formation identification, regional geological history interpretation, and more confident mineral assemblage predictions.
+Location context can bias identification toward regionally common rock types. Without location, the AI focuses purely on visual features, correctly identifying the vesicular texture as tufa. With location, it defaults to limestone (common in the Wasatch Range) despite the distinctive tufa characteristics.
 
 </details>
 
@@ -182,29 +168,29 @@ $ python rock_analyzer.py rocks_utah.png --location "Uinta-Wasatch-Cache Nationa
 
 Running comparison analysis...
 
-[1/2] WITH LOCATION CONTEXT
+[1/2] WITHOUT LOCATION CONTEXT
 Loading image: rocks_utah.png
-Performing geological analysis with location context...
-Analysis completed in 41.06 seconds
+Performing geological analysis without location context...
+Analysis completed in 67.99 seconds
 
 ======================================================================
 GEOLOGICAL ANALYSIS REPORT
 ======================================================================
 
 EXECUTIVE SUMMARY:
-  Total specimens: 7
-  Dominant lithology: sedimentary_chemical
+  Total specimens: 5
+  Dominant lithology: sedimentary_chemical (tufa/travertine)
   Secondary lithology: unconsolidated
-  Average grain size: cryptocrystalline to medium
-  Weathering assessment: Moderate to high chemical weathering (karst features)
-  Location: Uinta-Wasatch-Cache National Forest, Utah
+  Average grain size: cryptocrystalline
+  Weathering assessment: High chemical weathering creating vuggy textures
+  Location: No location context
 
 [... detailed specimen descriptions ...]
 
-[2/2] WITHOUT LOCATION CONTEXT
+[2/2] WITH LOCATION CONTEXT
 Loading image: rocks_utah.png
-Performing geological analysis without location context...
-Analysis completed in 36.17 seconds
+Performing geological analysis with location context...
+Analysis completed in 71.49 seconds
 
 [... comparison analysis ...]
 ```
@@ -237,15 +223,15 @@ Analysis completed in 36.17 seconds
 
 ## API Requirements
 
-- Google Gemini API key with access to Gemini 2.5 Flash model
+- Google Gemini API key with access to Gemini 2.5 Pro model
 - Internet connection for API calls
 
 ## Example Analysis: rocks_utah.png
 
-The repository includes `rocks_utah.png` as a sample image from Uinta-Wasatch-Cache National Forest, Utah. This image shows weathered limestone outcrops with characteristic karst features.
+The repository includes `rocks_utah.png` as a sample image from Uinta-Wasatch-Cache National Forest, Utah. The Pro model identifies these as tufa (freshwater carbonate deposits) when analyzed without location context, though regional geology suggests they could also be weathered limestone.
 
 ![Sample Rock Image](rocks_utah.png)
-*Weathered limestone outcrops in Utah*
+*Tufa deposits in Utah*
 
 ## Technical Details
 
@@ -253,7 +239,7 @@ The repository includes `rocks_utah.png` as a sample image from Uinta-Wasatch-Ca
 - Implements typed schemas for guaranteed JSON structure
 - Literal types for discrete categorization
 - PIL/Pillow for image processing
-- Thinking budget disabled for optimal performance
+- Gemini 2.5 Pro with thinking mode (32k budget) for deeper analysis
 
 ## Contributing
 
