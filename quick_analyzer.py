@@ -81,40 +81,120 @@ def analyze_rocks(image_path: str, location: str = None, use_location: bool = Tr
     image = Image.open(image_path)
     image.thumbnail([1024, 1024], Image.Resampling.LANCZOS)
 
-    # Build the prompt with clear instructions for discrete categories
+    # Enhanced prompt with reasoning scaffolds (simplified for quick analysis)
     base_prompt = """
-    Analyze all rocks visible in this image. For each rock, provide:
+    You are a field geologist performing a rapid rock assessment. While this is a quick analysis,
+    maintain scientific rigor and systematic observation.
 
-    DISCRETE FIELDS (you MUST choose from these exact options):
-    - primary_type: Choose ONE of: "sedimentary", "igneous", "metamorphic", "unknown", "other"
-    - size_category: Choose ONE of: "tiny" (<5cm), "small" (5-20cm), "medium" (20-50cm), "large" (50-100cm), "boulder" (100-200cm), "massive" (>200cm)
-    - weathering_state: Choose ONE of: "fresh", "slightly_weathered", "moderately_weathered", "heavily_weathered", "extremely_weathered"
-    - confidence_level: Choose ONE of: "very_low" (0-0.2), "low" (0.2-0.4), "medium" (0.4-0.6), "high" (0.6-0.8), "very_high" (0.8-1.0)
-    - position: Choose ONE of: "foreground", "midground", "background", "left", "right", "center", "top", "bottom", "multiple"
+    ═══════════════════════════════════════════════════════════════════
+    QUICK ANALYSIS FRAMEWORK
+    ═══════════════════════════════════════════════════════════════════
 
-    NUMERICAL FIELDS:
-    - confidence_value: Exact confidence as a float between 0.0 and 1.0
-    - estimated_size_cm: Your best estimate of the rock's largest dimension in centimeters
+    For each rock, follow this rapid assessment process:
+    1. Observe: Note key visual features (texture, color, structure)
+    2. Classify: Determine primary rock type and characteristics
+    3. Assess: Evaluate confidence based on feature clarity
 
-    FLEXIBLE DESCRIPTIVE FIELDS (provide detailed geological descriptions):
-    - specific_rock_type: Be as specific as possible (e.g., "limestone", "granite", "quartzite")
-    - color_description: Detailed color observations
-    - texture_details: Comprehensive texture description
-    - mineral_composition: Any visible minerals you can identify
-    - structural_features: Geological structures like joints, bedding, foliation
-    - surface_features: Lichen, moss, staining, weathering patterns
-    - shape_description: Overall shape and angularity
-    - geological_notes: Your expert geological observations and interpretations
+    ═══════════════════════════════════════════════════════════════════
+    CLASSIFICATION CATEGORIES
+    ═══════════════════════════════════════════════════════════════════
 
-    For the summary:
-    - dominant_rock_type must be one of: "sedimentary", "igneous", "metamorphic", "unknown", "other"
-    - Provide detailed geological interpretation
+    ┌─ PRIMARY ROCK TYPE ───────────────────────────────────────────────
+    │ primary_type - Select ONE:
+    │   • "sedimentary" - Layered, grainy, or massive (sandstone, limestone, shale)
+    │   • "igneous" - Crystalline or glassy (granite, basalt, obsidian)
+    │   • "metamorphic" - Foliated or recrystallized (schist, marble, slate)
+    │   • "unknown" - Cannot determine from visible features
+    │   • "other" - Unconsolidated or mixed materials
+    │
+    │ Quick identification tips:
+    │ - Sedimentary: Look for layers, grains, fossils, rounded clasts
+    │ - Igneous: Interlocking crystals (slow cooling) or fine/glassy (fast cooling)
+    │ - Metamorphic: Foliation, alignment, recrystallized texture
+    └────────────────────────────────────────────────────────────────────
+
+    ┌─ SIZE CATEGORY ───────────────────────────────────────────────────
+    │ size_category - Estimate largest dimension:
+    │   • "tiny" - <5cm (hand sample)
+    │   • "small" - 5-20cm (grapefruit to melon)
+    │   • "medium" - 20-50cm (basketball to large pumpkin)
+    │   • "large" - 50-100cm (beach ball to small boulder)
+    │   • "boulder" - 100-200cm (large boulder)
+    │   • "massive" - >200cm (very large or outcrop)
+    └────────────────────────────────────────────────────────────────────
+
+    ┌─ WEATHERING STATE ────────────────────────────────────────────────
+    │ weathering_state - Degree of surface alteration:
+    │   • "fresh" - Clean, unaltered surfaces
+    │   • "slightly_weathered" - Minor discoloration or surface changes
+    │   • "moderately_weathered" - Visible weathering, structure intact
+    │   • "heavily_weathered" - Significant alteration, weakened structure
+    │   • "extremely_weathered" - Heavily altered, texture obscured
+    └────────────────────────────────────────────────────────────────────
+
+    ┌─ CONFIDENCE CALIBRATION ──────────────────────────────────────────
+    │ confidence_level & confidence_value:
+    │   • "very_high" (0.8-1.0) - Diagnostic features clearly visible
+    │   • "high" (0.6-0.8) - Good features, minor uncertainty
+    │   • "medium" (0.4-0.6) - Reasonable guess, some ambiguity
+    │   • "low" (0.2-0.4) - Educated guess, limited clarity
+    │   • "very_low" (0.0-0.2) - Highly uncertain identification
+    │
+    │ Be honest about uncertainty. Consider image quality, angle, and coverage.
+    └────────────────────────────────────────────────────────────────────
+
+    ┌─ OTHER FIELDS ────────────────────────────────────────────────────
+    │ • position: Location in image frame
+    │ • estimated_size_cm: Best estimate of largest dimension in cm
+    │
+    │ DESCRIPTIVE FIELDS (detailed observations):
+    │ • specific_rock_type: As specific as possible (e.g., "limestone", "granite")
+    │ • color_description: Detailed color observations
+    │ • texture_details: Surface and internal texture
+    │ • mineral_composition: Any visible minerals
+    │ • structural_features: Bedding, foliation, joints, veins
+    │ • surface_features: Lichen, weathering patterns, coatings
+    │ • shape_description: Overall morphology and angularity
+    │ • geological_notes: Expert observations linking features to interpretation
+    └────────────────────────────────────────────────────────────────────
+
+    ═══════════════════════════════════════════════════════════════════
+    SUMMARY REQUIREMENTS
+    ═══════════════════════════════════════════════════════════════════
+
+    • dominant_rock_type: Must be "sedimentary", "igneous", "metamorphic", "unknown", or "other"
+    • Provide geological interpretation of the overall setting
+    • Note formation processes and potential geological context
     """
 
     if location and use_location:
-        prompt = f"{base_prompt}\n\nLocation: {location}\nConsider the regional geology and typical rock types found in this area."
+        prompt = f"""{base_prompt}
+
+    ═══════════════════════════════════════════════════════════════════
+    LOCATION CONTEXT PROVIDED
+    ═══════════════════════════════════════════════════════════════════
+
+    Location: {location}
+
+    Use location knowledge to:
+    • Consider typical regional rock types
+    • Inform geological setting interpretation
+    • Guide formation identification
+
+    IMPORTANT: Visual evidence is primary. If features contradict regional
+    expectations, trust what you observe and note the discrepancy. Consider
+    transported specimens (glacial erratics, building stones, fill material).
+    """
     else:
-        prompt = f"{base_prompt}\n\nAnalyze based solely on visual features without location context."
+        prompt = f"""{base_prompt}
+
+    ═══════════════════════════════════════════════════════════════════
+    NO LOCATION CONTEXT - Visual Analysis Only
+    ═══════════════════════════════════════════════════════════════════
+
+    Analyze based purely on observable features without regional geology knowledge.
+    Focus on diagnostic visual characteristics: texture, structure, mineralogy.
+    """
 
     config = types.GenerateContentConfig(
         response_mime_type="application/json",

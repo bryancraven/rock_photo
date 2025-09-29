@@ -219,76 +219,277 @@ def analyze_rocks_geological(image_path: str, location: str = None, use_location
     image = Image.open(image_path)
     image.thumbnail([1024, 1024], Image.Resampling.LANCZOS)
 
-    # Professional geological analysis prompt
+    # Professional geological analysis prompt with reasoning scaffolds
     prompt = """
-    Perform a comprehensive geological analysis of all rocks visible in this image.
+    You are an experienced field geologist conducting a systematic geological analysis of rocks in this image.
+    Your analysis will be used for scientific documentation, so apply rigorous field geology principles.
 
-    For each rock, you MUST select from these exact standardized categories:
+    ═══════════════════════════════════════════════════════════════════
+    ANALYTICAL FRAMEWORK - Use Your Extended Thinking Capability
+    ═══════════════════════════════════════════════════════════════════
 
-    ROCK CLASSIFICATION:
-    - rock_class: Choose from: "igneous_volcanic", "igneous_plutonic", "igneous_hypabyssal",
-      "sedimentary_clastic", "sedimentary_chemical", "sedimentary_organic",
-      "metamorphic_foliated", "metamorphic_nonfoliated", "unconsolidated", "unknown"
+    In your thinking process, follow this systematic approach for each rock:
 
-    SIZE CLASSIFICATION (Wentworth scale):
-    - size_class: "clay_silt", "sand", "granule", "pebble", "cobble", "boulder", "block", "outcrop"
+    1. OBSERVATION PHASE
+       - Systematically observe all visible features without interpretation
+       - Note texture, color, structure, grain size, weathering patterns
+       - Identify any distinctive features (crystals, fossils, layering, vesicles)
+       - Assess scale and context clues
 
-    GRAIN SIZE:
-    - grain_size: "cryptocrystalline", "very_fine", "fine", "medium", "coarse",
-      "very_coarse", "pegmatitic", "mixed", "not_applicable"
+    2. INTERPRETATION PHASE
+       - What do these features tell you about rock origin?
+       - Consider multiple hypotheses (e.g., could this be volcanic OR contact metamorphic?)
+       - Evaluate evidence strength for each hypothesis
+       - Note any conflicting or ambiguous indicators
 
-    WEATHERING:
-    - weathering_grade: "fresh", "slight", "moderate", "high", "complete", "residual_soil"
-    - weathering_type: "none", "mechanical", "chemical", "biological", "mixed",
-      "spheroidal", "exfoliation"
+    3. CLASSIFICATION PHASE
+       - Select the most appropriate standardized categories
+       - Justify your classifications based on observed features
+       - Assign confidence based on feature clarity and diagnostic certainty
+       - Use "unknown" only when truly indeterminate, not when moderately uncertain
 
-    PHYSICAL PROPERTIES:
-    - hardness_class: "very_soft", "soft", "medium", "hard", "very_hard"
-    - primary_structure: "massive", "layered", "foliated", "vesicular", "amygdaloidal",
-      "porphyritic", "brecciated", "conglomeratic", "crystalline", "concretionary"
-    - fracture_type: "conchoidal", "irregular", "splintery", "blocky", "platy",
-      "columnar", "joint_controlled", "none_visible"
+    ═══════════════════════════════════════════════════════════════════
+    STANDARDIZED CLASSIFICATION SYSTEM
+    ═══════════════════════════════════════════════════════════════════
 
-    ALTERATION & COLOR:
-    - alteration_type: "unaltered", "oxidized", "silicified", "carbonatized", "chloritized",
-      "sericitized", "kaolinized", "mineralized", "metamorphosed", "hydrothermal"
-    - color_pattern: "uniform", "mottled", "banded", "spotted", "veined", "gradational"
+    For each rock, select from these precise categories. Context provided to guide decisions:
 
-    GEOLOGICAL CONTEXT:
-    - geological_context: "in_situ_outcrop", "displaced_block", "float", "talus",
-      "glacial_erratic", "stream_cobble", "artificial", "unknown_context"
+    ┌─ ROCK CLASSIFICATION ─────────────────────────────────────────────
+    │ rock_class - Primary genetic classification:
+    │   • "igneous_volcanic" - Extrusive: basalt, rhyolite, andesite, tuff
+    │   • "igneous_plutonic" - Intrusive: granite, gabbro, diorite
+    │   • "igneous_hypabyssal" - Shallow intrusive: porphyry, dolerite
+    │   • "sedimentary_clastic" - Fragment-based: sandstone, shale, conglomerate
+    │   • "sedimentary_chemical" - Precipitated: limestone, dolomite, evaporites, tufa
+    │   • "sedimentary_organic" - Biogenic: coal, diatomite
+    │   • "metamorphic_foliated" - Layered: schist, gneiss, slate, phyllite
+    │   • "metamorphic_nonfoliated" - Massive: marble, quartzite, hornfels
+    │   • "unconsolidated" - Loose: soil, sand, gravel
+    │   • "unknown" - Truly indeterminate only
+    │
+    │ Decision guide: Volcanic rocks show rapid cooling (fine grain, vesicles).
+    │ Plutonic rocks show slow cooling (coarse, interlocking crystals).
+    │ Sedimentary clastic shows grains/fragments. Chemical shows crystalline/massive texture.
+    │ Metamorphic foliated shows alignment. Consider transition zones carefully.
+    └────────────────────────────────────────────────────────────────────
 
-    CONFIDENCE & POSITION:
-    - confidence_level: "very_low", "low", "medium", "high", "very_high"
-    - image_position: "foreground", "midground", "background", "left", "right", "center", "multiple"
+    ┌─ SIZE CLASSIFICATION (Wentworth Scale) ───────────────────────────
+    │ size_class - Particle or specimen size:
+    │   • "clay_silt" - <0.0625mm particles (feels smooth, not gritty)
+    │   • "sand" - 0.0625-2mm (gritty, individual grains barely visible)
+    │   • "granule" - 2-4mm (small pebbles, pea-sized)
+    │   • "pebble" - 4-64mm (thumbnail to fist-sized)
+    │   • "cobble" - 64-256mm (fist to bowling ball)
+    │   • "boulder" - 256-4096mm (larger than basketball)
+    │   • "block" - >4096mm (very large, typically >4m)
+    │   • "outcrop" - Bedrock exposure, not individual clast
+    │
+    │ Note: For clastic rocks, classify by clast size. For crystalline rocks,
+    │ classify by overall specimen size unless describing component grain sizes.
+    └────────────────────────────────────────────────────────────────────
 
-    NUMERICAL VALUES:
-    - confidence_value: 0.0 to 1.0
-    - estimated_diameter_cm: Estimate in centimeters
-    - visible_minerals_count: Count of identifiable minerals
+    ┌─ GRAIN/CRYSTAL SIZE ──────────────────────────────────────────────
+    │ grain_size - Internal texture scale:
+    │   • "cryptocrystalline" - <0.1mm (appears smooth, no visible grains)
+    │   • "very_fine" - 0.1-0.5mm (hand lens needed)
+    │   • "fine" - 0.5-1mm (just visible to naked eye)
+    │   • "medium" - 1-5mm (clearly visible grains/crystals)
+    │   • "coarse" - 5-30mm (large distinct grains)
+    │   • "very_coarse" - 30-100mm (very large crystals)
+    │   • "pegmatitic" - >100mm (giant crystals)
+    │   • "mixed" - Multiple distinct grain sizes (porphyritic, conglomerate)
+    │   • "not_applicable" - Glassy, massive, or amorphous
+    └────────────────────────────────────────────────────────────────────
 
-    DESCRIPTIVE FIELDS (provide detailed professional descriptions):
-    - specific_rock_name: Full geological name
-    - color_details: Complete color description
-    - texture_description: Detailed textural analysis
-    - mineral_assemblage: All visible minerals
-    - surface_features: All surface characteristics
-    - structural_features: Geological structures
-    - shape_description: Morphology
-    - luster_description: Luster of minerals/surfaces
-    - special_features: Notable characteristics
-    - field_notes: Professional observations
-    - likely_formation: If identifiable
-    - age_estimate: Geological age if determinable
+    ┌─ WEATHERING ASSESSMENT ───────────────────────────────────────────
+    │ weathering_grade (Standard rock weathering scale):
+    │   • "fresh" - W0: No visible alteration, fresh surfaces
+    │   • "slight" - W1: Discoloration, minor surface changes
+    │   • "moderate" - W2: <50% minerals weathered, structure intact
+    │   • "high" - W3: >50% weathered, structure weakening
+    │   • "complete" - W4: All minerals altered, original texture obscured
+    │   • "residual_soil" - W5: Complete decomposition to soil
+    │
+    │ weathering_type - Dominant process:
+    │   • "mechanical" - Physical: frost wedging, thermal, abrasion
+    │   • "chemical" - Solution, oxidation, hydrolysis (rust, dissolution)
+    │   • "biological" - Roots, lichen, organic acids
+    │   • "spheroidal" - Onion-skin rounded weathering
+    │   • "exfoliation" - Sheet-like spalling
+    │   • "mixed" - Multiple processes evident
+    └────────────────────────────────────────────────────────────────────
 
-    For the summary, provide comprehensive geological interpretation including
-    tectonic setting, depositional environment, metamorphic grade, and economic geology notes.
+    ┌─ PHYSICAL PROPERTIES ─────────────────────────────────────────────
+    │ hardness_class (Mohs scale ranges):
+    │   • "very_soft" - 1-2: Talc, gypsum (scratches with fingernail)
+    │   • "soft" - 2-3: Calcite (scratches with coin)
+    │   • "medium" - 3-5: Fluorite, apatite (scratches with knife)
+    │   • "hard" - 5-7: Quartz, feldspar (scratches glass)
+    │   • "very_hard" - 7-10: Corundum, diamond
+    │
+    │ primary_structure - Dominant structural feature:
+    │   • "massive" - No visible internal structure
+    │   • "layered" - Sedimentary bedding planes
+    │   • "foliated" - Metamorphic alignment of minerals
+    │   • "vesicular" - Gas bubble holes (volcanic)
+    │   • "amygdaloidal" - Filled vesicles (mineralized)
+    │   • "porphyritic" - Large crystals in fine matrix
+    │   • "brecciated" - Angular fragments cemented
+    │   • "conglomeratic" - Rounded clasts in matrix
+    │   • "crystalline" - Interlocking crystal structure
+    │   • "concretionary" - Spherical/nodular concentrations
+    │
+    │ fracture_type:
+    │   • "conchoidal" - Shell-like curved surfaces (obsidian, chert)
+    │   • "joint_controlled" - Breaks along structural planes
+    │   • "columnar" - Hexagonal columns (basalt cooling joints)
+    │   • "blocky", "platy", "splintery", "irregular"
+    └────────────────────────────────────────────────────────────────────
+
+    ┌─ ALTERATION & APPEARANCE ─────────────────────────────────────────
+    │ alteration_type - Post-formation changes:
+    │   • "unaltered" - Primary mineralogy intact
+    │   • "oxidized" - Iron staining, rust colors
+    │   • "silicified" - Quartz replacement/cementation
+    │   • "carbonatized" - Carbonate mineral alteration
+    │   • "chloritized" - Green chlorite alteration
+    │   • "sericitized" - White mica (sericite) alteration
+    │   • "kaolinized" - Clay mineral replacement
+    │   • "mineralized" - Ore minerals introduced
+    │   • "hydrothermal" - Hot water alteration
+    │
+    │ color_pattern:
+    │   • "uniform", "mottled", "banded", "spotted", "veined", "gradational"
+    └────────────────────────────────────────────────────────────────────
+
+    ┌─ GEOLOGICAL CONTEXT ──────────────────────────────────────────────
+    │ geological_context - Placement and transport history:
+    │   • "in_situ_outcrop" - Bedrock in original position
+    │   • "displaced_block" - Moved but clearly local source
+    │   • "float" - Detached, uncertain transport distance
+    │   • "talus" - Slope debris at base of outcrop
+    │   • "glacial_erratic" - Glacially transported
+    │   • "stream_cobble" - Water-worn and transported
+    │   • "artificial" - Human-placed (building stone, fill)
+    └────────────────────────────────────────────────────────────────────
+
+    ┌─ CONFIDENCE CALIBRATION ──────────────────────────────────────────
+    │ confidence_level & confidence_value (0.0-1.0):
+    │   • "very_high" (0.8-1.0) - Diagnostic features clearly visible
+    │   • "high" (0.6-0.8) - Strong evidence, minor uncertainty
+    │   • "medium" (0.4-0.6) - Reasonable inference, some ambiguity
+    │   • "low" (0.2-0.4) - Educated guess, limited features
+    │   • "very_low" (0.0-0.2) - Highly uncertain, poor visibility
+    │
+    │ Calibration guidance: Be honest about uncertainty. High confidence
+    │ requires diagnostic features. Consider image resolution, lighting,
+    │ angle, and coverage. Partial views reduce confidence.
+    └────────────────────────────────────────────────────────────────────
+
+    ┌─ ADDITIONAL FIELDS ───────────────────────────────────────────────
+    │ • image_position: Location in frame
+    │ • estimated_diameter_cm: Best estimate of largest dimension
+    │ • visible_minerals_count: Number of identifiable minerals
+    │
+    │ DESCRIPTIVE FIELDS (detailed professional descriptions):
+    │ • specific_rock_name: Full geological name (e.g., "biotite granite")
+    │ • color_details, texture_description, mineral_assemblage
+    │ • surface_features, structural_features, shape_description
+    │ • luster_description, special_features (fossils, xenoliths, etc.)
+    │ • field_notes: Professional observations linking features to interpretation
+    │ • likely_formation: Geological formation name if identifiable
+    │ • age_estimate: Geological age if determinable from features/formation
+    └────────────────────────────────────────────────────────────────────
+
+    ═══════════════════════════════════════════════════════════════════
+    SUMMARY REQUIREMENTS
+    ═══════════════════════════════════════════════════════════════════
+
+    Provide comprehensive geological interpretation including:
+    • Tectonic setting and structural geology context
+    • Depositional environment (for sedimentary)
+    • Metamorphic grade (if applicable)
+    • Regional geological setting
+    • Economic geology significance
+    • Recommended further analyses (thin sections, XRF, etc.)
+
+    ═══════════════════════════════════════════════════════════════════
+    EDGE CASE GUIDANCE
+    ═══════════════════════════════════════════════════════════════════
+
+    • Mixed rock types: Choose dominant class, note mixing in field_notes
+    • Heavily weathered: Focus on relict textures and resistant minerals
+    • Poor lighting/resolution: Lower confidence, describe limitations
+    • Unusual features: Document thoroughly in special_features
+    • Transitional rocks: Select closest match, explain reasoning in field_notes
     """
 
     if location and use_location:
-        prompt += f"\n\nLocation: {location}\nIncorporate regional geological knowledge in your analysis."
+        prompt += f"""
+
+    ═══════════════════════════════════════════════════════════════════
+    LOCATION CONTEXT - Use as Bayesian Prior, Not Confirmation
+    ═══════════════════════════════════════════════════════════════════
+
+    Location: {location}
+
+    IMPORTANT: Use location knowledge appropriately:
+
+    1. VISUAL EVIDENCE IS PRIMARY
+       - Base your identification primarily on observable features
+       - Location provides context and probabilistic priors, not answers
+
+    2. INTEGRATE REGIONAL GEOLOGY
+       - Consider typical rock types in this region
+       - Think about regional tectonic setting and geological history
+       - Use knowledge of local formations and lithologies
+
+    3. HANDLE CONFLICTS HONESTLY
+       - If visual features contradict regional expectations, TRUST THE VISUALS
+       - Explicitly note conflicts in field_notes (e.g., "Visual features suggest
+         X, but this is uncommon in [location]; possible transported specimen")
+       - Consider transported rocks: glacial erratics, building stones, fill material
+
+    4. AVOID CONFIRMATION BIAS
+       - Don't force identification to match regional rock types
+       - Unusual specimens exist; document them
+       - Your confidence should reflect visual evidence quality, not location matching
+
+    5. USE LOCATION TO ENHANCE, NOT OVERRIDE
+       - Helps with formation identification
+       - Informs age estimates
+       - Provides tectonic context
+       - But diagnostic features trump regional probabilities
+
+    Example reasoning: "Vesicular texture strongly indicates volcanic origin (high confidence).
+    Location is in sedimentary terrain, suggesting this is displaced/transported volcanic rock,
+    possibly glacial erratic or fill material."
+    """
     else:
-        prompt += "\n\nAnalyze based on visual features alone without location context."
+        prompt += """
+
+    ═══════════════════════════════════════════════════════════════════
+    NO LOCATION CONTEXT - Pure Visual Analysis
+    ═══════════════════════════════════════════════════════════════════
+
+    Analyze based purely on observable features without regional geology knowledge.
+    This approach eliminates location bias but may miss formation-specific insights.
+
+    Focus entirely on:
+    • Texture, structure, and mineralogy visible in image
+    • Weathering patterns and alteration
+    • Physical characteristics and relationships
+    • Diagnostic features that indicate rock origin
+
+    Without location, you cannot reliably:
+    • Identify specific geological formations
+    • Provide precise age estimates
+    • Assess regional tectonic context
+    • Evaluate typical vs. unusual occurrences
+
+    Adjust confidence accordingly: High confidence only when diagnostic features
+    are clearly visible and definitive.
+    """
 
     config = types.GenerateContentConfig(
         response_mime_type="application/json",
