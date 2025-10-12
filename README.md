@@ -95,7 +95,77 @@ python quick_analyzer.py rocks.jpg --location "Hawaii" --compare --save
 ### Sample Analysis Results
 
 <details>
-<summary><b>📊 Full Analysis Without Location Context</b></summary>
+<summary><b>📊 Full Analysis With Location Context</b></summary>
+
+**Input:** River rocks from banks of Boise River near Boise, Idaho
+**Analysis time:** ~77 seconds
+
+```json
+{
+  "summary": {
+    "total_rocks": 6,
+    "dominant_rock_class": "igneous_plutonic",
+    "secondary_rock_class": "igneous_volcanic",
+    "average_grain_size": "mixed",
+    "weathering_assessment": "Slight to moderate weathering, dominated by mechanical abrasion (fluvial rounding) with minor chemical oxidation on some clasts.",
+    "geological_setting": "Fluvial gravel bar or terrace deposit on the banks of the Boise River, within the western Snake River Plain.",
+    "tectonic_interpretation": "The mixed rock assemblage reflects multiple tectonic events: Cretaceous subduction-related magmatism (Idaho Batholith) and Cenozoic extensional tectonics and hotspot-related volcanism (Snake River Plain).",
+    "depositional_environment": "Moderate to high-energy fluvial environment, characterized by the transport and deposition of sand, pebbles, and cobbles.",
+    "economic_geology_notes": "These types of fluvial deposits are a primary source of aggregate (sand and gravel). Historically, the Boise River basin has been a site for placer gold mining, with gold eroded from lode deposits within the Idaho Batholith.",
+    "location_used": "banks of Boise River near Boise, Idaho"
+  },
+  "rocks": [
+    {
+      "rock_class": "igneous_plutonic",
+      "specific_rock_name": "Granodiorite or Granite",
+      "size_class": "cobble",
+      "grain_size": "medium",
+      "weathering_grade": "slight",
+      "hardness_class": "hard",
+      "primary_structure": "crystalline",
+      "geological_context": "stream_cobble",
+      "confidence_level": "high",
+      "confidence_value": 0.75,
+      "estimated_diameter_cm": 15.0,
+      "mineral_assemblage": "Likely quartz (grayish), plagioclase/K-feldspar (white), and a mafic mineral like biotite or hornblende (black).",
+      "field_notes": "This is a classic example of a granitoid clast derived from the Idaho Batholith. The phaneritic texture is diagnostic of a slow-cooling plutonic origin.",
+      "likely_formation": "Idaho Batholith",
+      "age_estimate": "Cretaceous"
+    },
+    {
+      "rock_class": "igneous_volcanic",
+      "specific_rock_name": "Basalt",
+      "size_class": "pebble",
+      "grain_size": "cryptocrystalline",
+      "weathering_grade": "slight",
+      "hardness_class": "hard",
+      "primary_structure": "massive",
+      "geological_context": "stream_cobble",
+      "confidence_level": "high",
+      "confidence_value": 0.7,
+      "estimated_diameter_cm": 4.0,
+      "field_notes": "This is a typical mafic volcanic clast, likely derived from the Snake River Plain Group basalts. Its high degree of rounding suggests it has traveled a considerable distance in the river.",
+      "likely_formation": "Snake River Plain Group",
+      "age_estimate": "Neogene (Miocene to Holocene)"
+    }
+  ]
+}
+```
+
+**Key Findings:**
+- Identified 6 specimens: granite/granodiorite from Idaho Batholith and basalt from Snake River Plain
+- Multi-tectonic event history: Cretaceous subduction (plutonic rocks) + Cenozoic hotspot volcanism (volcanic rocks)
+- Fluvial transport evident from well-rounded shapes
+- Historical placer gold mining area
+- This is an **experimental hobbyist analysis** - AI-generated identifications should not be considered authoritative
+
+</details>
+
+<details>
+<summary><b>📊 Full Analysis Without Location Context - Utah Tufa Example</b></summary>
+
+**Input:** Rock sample from Utah
+**Analysis time:** ~68 seconds
 
 ```json
 {
@@ -134,29 +204,35 @@ python quick_analyzer.py rocks.jpg --location "Hawaii" --compare --save
 - Identified as tufa (freshwater carbonate deposits) based on vesicular texture
 - Spring system deposit with rapid CO2 degassing
 - High porosity from encrusted organic matter that decayed
-- Analysis time: ~68 seconds
+- This is an **experimental hobbyist analysis** - AI-generated identifications should not be considered authoritative
 
 </details>
 
 ### Comparison Mode Results
 
+The `--compare` flag analyzes the same image both with and without location context to show how geographical information influences AI identification. This is useful for understanding potential biases in the experimental model.
+
 <details>
-<summary><b>🔄 With vs Without Location Context</b></summary>
+<summary><b>🔄 Example: Comparison Analysis Impact</b></summary>
 
-#### With Location (Uinta-Wasatch-Cache National Forest, Utah):
-- **Rock identification**: Limestone with karst weathering
-- **Formation**: Paleozoic marine carbonate
-- **Tectonic context**: Laramide Orogeny and Basin and Range extension
-- **Depositional environment**: Marine shelf environment
+When analyzing the same rock sample with and without location context, the results can vary significantly:
 
-#### Without Location:
-- **Rock identification**: Tufa/travertine (freshwater carbonate)
-- **Formation**: Spring system deposit
-- **Tectonic context**: Possible extensional setting with groundwater circulation
-- **Depositional environment**: Terrestrial freshwater spring
+#### With Location Context:
+- AI may bias toward regionally common rock types
+- Incorporates known geological formations from the area
+- Higher confidence in tectonic and depositional interpretations
+- May overlook contradictory visual features
 
-**Impact of Location Context:**
-Location context can bias identification toward regionally common rock types. Without location, the AI focuses purely on visual features, correctly identifying the vesicular texture as tufa. With location, it defaults to limestone (common in the Wasatch Range) despite the distinctive tufa characteristics.
+#### Without Location Context:
+- Relies purely on visual texture and mineralogy
+- More objective feature-based identification
+- Lower confidence in formation names and ages
+- May miss regional geological context
+
+**Example Impact:**
+In one test with Utah tufa deposits, location context caused the AI to identify them as limestone (common in the region) despite distinctive tufa characteristics visible in the image. Without location, it correctly identified the vesicular texture as tufa from a spring system.
+
+**Note:** This experimental hobbyist tool's identifications can be influenced by location biases and should not be considered authoritative.
 
 </details>
 
@@ -166,36 +242,58 @@ Location context can bias identification toward regionally common rock types. Wi
 <summary><b>💻 Terminal Output Example</b></summary>
 
 ```bash
-$ python rock_analyzer.py rocks_utah.png --location "Uinta-Wasatch-Cache National Forest, Utah" --compare
+$ python rock_analyzer.py ABAB3BF2-B388-419F-8646-298FB9881E9C_1_105_c.jpeg \
+    --location "banks of Boise River near Boise, Idaho" --save
 
-Running comparison analysis...
-
-[1/2] WITHOUT LOCATION CONTEXT
-Loading image: rocks_utah.png
-Performing geological analysis without location context...
-Analysis completed in 67.99 seconds
+Loading image: /Users/.../ABAB3BF2-B388-419F-8646-298FB9881E9C_1_105_c.jpeg
+Performing geological analysis with location context...
+Analysis completed in 76.57 seconds
 
 ======================================================================
 GEOLOGICAL ANALYSIS REPORT
 ======================================================================
 
 EXECUTIVE SUMMARY:
-  Total specimens: 5
-  Dominant lithology: sedimentary_chemical (tufa/travertine)
-  Secondary lithology: unconsolidated
-  Average grain size: cryptocrystalline
-  Weathering assessment: High chemical weathering creating vuggy textures
-  Location: No location context
+  Total specimens: 6
+  Dominant lithology: igneous_plutonic
+  Secondary lithology: igneous_volcanic
+  Average grain size: mixed
+  Weathering assessment: Slight to moderate weathering, dominated by
+    mechanical abrasion (fluvial rounding) with minor chemical oxidation
+  Location: banks of Boise River near Boise, Idaho
 
-[... detailed specimen descriptions ...]
+GEOLOGICAL INTERPRETATION:
+  Setting: Fluvial gravel bar or terrace deposit on the banks of the
+    Boise River, within the western Snake River Plain.
+  Tectonic context: The mixed rock assemblage reflects multiple tectonic
+    events: Cretaceous subduction-related magmatism (Idaho Batholith) and
+    Cenozoic extensional tectonics and hotspot-related volcanism (Snake
+    River Plain).
 
-[2/2] WITH LOCATION CONTEXT
-Loading image: rocks_utah.png
-Performing geological analysis with location context...
-Analysis completed in 71.49 seconds
+ECONOMIC GEOLOGY: These types of fluvial deposits are a primary source
+  of aggregate. Historically, the Boise River basin has been a site for
+  placer gold mining, with gold eroded from lode deposits within the
+  Idaho Batholith.
 
-[... comparison analysis ...]
+======================================================================
+DETAILED SPECIMEN DESCRIPTIONS (6 specimens)
+======================================================================
+
+--- Specimen 1 ---
+Classification: igneous_plutonic
+Specific name: Granodiorite or Granite
+Size: cobble (~15 cm)
+Grain size: medium
+Confidence: high (0.75)
+Formation: Idaho Batholith
+Age: Cretaceous
+
+[... additional specimens ...]
+
+Results saved to: geological_analysis_ABAB3BF2-B388-419F-8646-298FB9881E9C_1_105_c.json
 ```
+
+**Note:** This is an experimental hobbyist tool. Rock identifications are AI-generated and should not be considered authoritative geological assessments.
 
 </details>
 
@@ -228,12 +326,25 @@ Analysis completed in 71.49 seconds
 - Google Gemini API key with access to Gemini 2.5 Pro model
 - Internet connection for API calls
 
-## Example Analysis: rocks_utah.png
+## Example Analysis: Boise River Rocks
 
-The repository includes `rocks_utah.png` as a sample image from Uinta-Wasatch-Cache National Forest, Utah. The Pro model identifies these as tufa (freshwater carbonate deposits) when analyzed without location context, though regional geology suggests they could also be weathered limestone.
+The repository includes a sample image of river rocks from the banks of the Boise River near Boise, Idaho. This **experimental hobbyist analysis** demonstrates how the AI model identifies multiple rock types from different geological eras:
 
-![Sample Rock Image](rocks_utah.png)
-*Tufa deposits in Utah*
+**Command used:**
+```bash
+python rock_analyzer.py ABAB3BF2-B388-419F-8646-298FB9881E9C_1_105_c.jpeg \
+  --location "banks of Boise River near Boise, Idaho" --save
+```
+
+**Results:** The AI identified 6 specimens including:
+- **Granite/Granodiorite cobbles** from the Cretaceous Idaho Batholith (~100 million years old)
+- **Basalt pebbles** from the Neogene Snake River Plain Group (hotspot volcanism)
+- Mixed assemblage showing multi-tectonic event history
+
+The analysis correctly interpreted the fluvial depositional environment and even noted the historical placer gold mining significance of the area.
+
+![Sample Rock Image](ABAB3BF2-B388-419F-8646-298FB9881E9C_1_105_c.jpeg)
+*Fluvial deposits on the banks of Boise River, Idaho - showing granite from Idaho Batholith and basalt from Snake River Plain*
 
 ## Technical Details
 
